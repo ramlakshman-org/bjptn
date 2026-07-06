@@ -1,9 +1,25 @@
 services:
+  # ── Frontend — Static Site (free, never sleeps, CDN-served) ──────────────
   - type: web
-    name: wtl-backend
+    name: bjptn-frontend
+    env: static
+    region: oregon
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false # Set to your backend URL e.g. https://bjptn-backend.onrender.com
+
+  # ── Backend — Web Service (free tier + UptimeRobot keep-alive) ───────────
+  - type: web
+    name: bjptn-backend
     env: node
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: cd backend && npm install
     startCommand: cd backend && node src/index.js
     healthCheckPath: /health
