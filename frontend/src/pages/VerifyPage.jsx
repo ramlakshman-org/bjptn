@@ -112,7 +112,7 @@ export default function VerifyPage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, borderTop: '1px solid var(--color-graphite)', paddingTop: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 16, borderTop: '1px solid var(--color-graphite)', paddingTop: 16 }}>
             {[
               { label: 'EPIC No',  value: v.epic_no || epicNo },
               { label: 'Assembly', value: v.assembly || v.AssemblyName },
@@ -159,11 +159,11 @@ export default function VerifyPage() {
 
         <div style={{ textAlign: 'center' }}>
           {isRegistered ? (
-            <a href={`/card/${epicNo}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--color-signal-mint)', color: 'var(--color-abyss)', padding: '10px 24px', borderRadius: '16px', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
+            <a href={`/card/${epicNo}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--color-signal-mint)', color: 'var(--color-abyss)', padding: '10px 24px', minHeight: 44, borderRadius: '16px', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
               <i className="bi bi-eye" /> View Full Card
             </a>
           ) : (
-            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FF9933', color: '#fff', padding: '10px 24px', borderRadius: '16px', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
+            <a href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FF9933', color: '#fff', padding: '10px 24px', minHeight: 44, borderRadius: '16px', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
               <i className="bi bi-person-plus-fill" /> Register Now
             </a>
           )}

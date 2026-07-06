@@ -20,7 +20,7 @@ export default function NotFoundPage() {
         style={{
           marginTop: 8,
           background: '#FF9933', color: '#fff', border: 'none',
-          padding: '12px 28px', borderRadius: 16,
+          padding: '12px 28px', minHeight: 44, borderRadius: 16,
           fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
           cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
         }}
