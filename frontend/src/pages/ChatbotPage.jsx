@@ -1104,7 +1104,7 @@ export default function ChatbotPage() {
                       type="button"
                       onClick={handleResendOtp}
                       disabled={isTyping}
-                      style={{ background: 'none', border: 'none', color: 'var(--color-signal-mint)', fontSize: 12, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--color-signal-mint)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline', padding: '8px 12px', minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
                     >
                       Resend OTP
                     </button>

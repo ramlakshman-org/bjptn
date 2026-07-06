@@ -37,6 +37,18 @@
   .right-chat-panel { order: -1; }
 }
 
+/* ── Mobile touch UX ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Prevent iOS auto-zoom on focus (requires font-size >= 16px) */
+  .chat-input { font-size: 16px; }
+
+  /* Send button: bump to 44×44 minimum tap target */
+  .chat-send-btn { width: 44px; height: 44px; font-size: 17px; }
+
+  /* Input area: tighter horizontal padding on small screens */
+  .chat-input-area { padding: var(--spacing-12) var(--spacing-16); }
+}
+
 /* ── Right Onboarding Console ────────────────────────────── */
 .right-chat-panel {
   width: 100%;
