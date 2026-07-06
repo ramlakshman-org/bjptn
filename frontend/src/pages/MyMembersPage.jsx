@@ -55,9 +55,9 @@ export default function MyMembersPage() {
         
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <img src="/newfavicon.png" alt="WTL" style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--color-graphite)' }} />
+          <img src="/bjp_logo.svg" alt="BJP" style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--color-graphite)' }} />
           <div>
-            <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--color-chalk)', letterSpacing: '0.1em' }}>WE THE LEADERS</div>
+            <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--color-chalk)', letterSpacing: '0.1em' }}>BJP TAMIL NADU</div>
             <div style={{ fontSize: 11, color: 'var(--color-signal-mint)', fontWeight: 600 }}>My Referred Members ({members.length})</div>
           </div>
           <button
@@ -90,7 +90,7 @@ export default function MyMembersPage() {
                     <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', width: 60 }}>Photo</th>
                     <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>Name</th>
                     <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>EPIC No</th>
-                    <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>WTL Code</th>
+                    <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>BJP Code</th>
                     <th style={{ padding: '12px 8px', color: 'var(--color-ash)', fontWeight: 600, fontSize: 11, textTransform: 'uppercase' }}>Joined Date</th>
                   </tr>
                 </thead>
