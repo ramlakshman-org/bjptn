@@ -593,21 +593,23 @@ router.post('/generate-card', chatGenerateCardLimiter, upload.single('photo'), a
     const db = getDb();
     const mobile      = req.session.verified_mobile || String(req.body.mobile || '').trim() || '';
 
-    // ── Hard block: already registered by this mobile ────────────────────────────
+    // ── Hard block: one card per mobile number ───────────────────────────────────
     const existingCard = await db.collection('generated_voters').findOne(
-      { EPIC_NO: epicNo, MOBILE_NO: mobile },
-      { projection: { card_url: 1, back_url: 1, wtl_code: 1, VOTER_NAME: 1 } },
+      { MOBILE_NO: mobile, card_url: { $exists: true, $ne: '' } },
+      { projection: { card_url: 1, back_url: 1, combined_url: 1, wtl_code: 1, referral_link: 1, VOTER_NAME: 1, EPIC_NO: 1 } },
     );
     if (existingCard?.card_url) {
       return res.status(409).json({
         success:            false,
         already_registered: true,
-        message:            'This EPIC is already registered. Your existing card is shown below.',
+        message:            'A card has already been generated for this mobile number.',
         card_url:           existingCard.card_url,
-        back_url:           existingCard.back_url   || '',
-        wtl_code:           existingCard.wtl_code   || '',
-        voter_name:         existingCard.VOTER_NAME || '',
-        epic_no:            epicNo,
+        back_url:           existingCard.back_url      || '',
+        combined_url:       existingCard.combined_url  || '',
+        wtl_code:           existingCard.wtl_code      || '',
+        referral_link:      existingCard.referral_link || '',
+        voter_name:         existingCard.VOTER_NAME    || '',
+        epic_no:            existingCard.EPIC_NO       || epicNo,
       });
     }
 
