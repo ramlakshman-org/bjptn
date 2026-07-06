@@ -131,10 +131,10 @@ async function generateCard(voter, photoBuffer = null) {
   const browser = await getBrowser();
   const page = await browser.newPage();
   try {
-    await page.setViewport({ width: 1600, height: 1100, deviceScaleFactor: 3 });
+    await page.setViewport({ width: 1600, height: 1100, deviceScaleFactor: 2 });
 
     const templateUrl = pathToFileURL(templatePath).href;
-    await page.goto(templateUrl, { waitUntil: 'networkidle2' });
+    await page.goto(templateUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
     const photoDataUrl = photoBuffer
       ? `data:${inferImageMimeType(photoBuffer)};base64,${photoBuffer.toString('base64')}`
@@ -234,8 +234,8 @@ async function generateBackCard(voter) {
   const browser = await getBrowser();
   const page = await browser.newPage();
   try {
-    await page.setViewport({ width: 1152, height: 768, deviceScaleFactor: 2 });
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    await page.setViewport({ width: 1152, height: 768, deviceScaleFactor: 1 });
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
     const cardHandle = await page.$('.back-card');
     if (!cardHandle) throw new Error('Could not locate .back-card element in back template');
@@ -274,7 +274,7 @@ async function generateCombinedCard(frontBuffer, backBuffer) {
       { input: frontBuffer, left: 0, top: 0 },
       { input: resizedBack, left: frontMetadata.width + 20, top: 0 },
     ])
-    .jpeg({ quality: 95 })
+    .jpeg({ quality: 85 })
     .toBuffer();
 }
 

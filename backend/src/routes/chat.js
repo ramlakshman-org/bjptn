@@ -703,26 +703,30 @@ router.post('/generate-card', chatGenerateCardLimiter, upload.single('photo'), a
 
       // Upload photo
       let photoUrl = '';
-      try {
-        photoUrl = await uploadPhoto(photoBuffer, epicNo);
-      } catch (e) {
-        console.error('Photo upload failed:', e.message);
-      }
+      // Generate front + back in parallel, upload photo concurrently
+      const [frontBuffer, backBuffer] = await Promise.all([
+        generateCard(voterData, photoBuffer),
+        generateBackCard(voterData).catch((e) => { console.warn('Back card error:', e.message); return null; }),
+        uploadPhoto(photoBuffer, epicNo).then((u) => { photoUrl = u; }).catch((e) => { console.error('Photo upload failed:', e.message); }),
+      ]).then(([f, b]) => [f, b]);
 
-      // Generate & upload front card
-      const frontBuffer = await generateCard(voterData, photoBuffer);
-      const cardUrl     = await uploadCard(frontBuffer, epicNo);
+      // Upload front card
+      const cardUrl = await uploadCard(frontBuffer, epicNo);
 
-      // Generate & upload back + combined card
+      // Upload back + combined (if back generated successfully)
       let backUrl     = '';
       let combinedUrl = cardUrl;
-      try {
-        const backBuffer     = await generateBackCard(voterData);
-        backUrl              = await uploadBackCard(backBuffer, epicNo);
-        const combinedBuffer = await generateCombinedCard(frontBuffer, backBuffer);
-        combinedUrl          = await uploadCombinedCard(combinedBuffer, epicNo);
-      } catch (e) {
-        console.warn('Back/combined card error:', e.message);
+      if (backBuffer) {
+        try {
+          const [uploadedBack, combinedBuffer] = await Promise.all([
+            uploadBackCard(backBuffer, epicNo),
+            generateCombinedCard(frontBuffer, backBuffer),
+          ]);
+          backUrl = uploadedBack;
+          combinedUrl = await uploadCombinedCard(combinedBuffer, epicNo);
+        } catch (e) {
+          console.warn('Back/combined upload error:', e.message);
+        }
       }
 
       const now = nowUTC();
