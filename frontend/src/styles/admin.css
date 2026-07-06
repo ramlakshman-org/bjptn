@@ -665,6 +665,24 @@
   .admin-content { padding: 14px; }
   .stat-cards-grid { grid-template-columns: repeat(2, 1fr); }
   .admin-topbar { padding: 8px 12px; }
+
+  /* Table: tighter cells on mobile, horizontal scroll already handled by .admin-table-wrap */
+  .admin-table th,
+  .admin-table td { padding: 7px 8px; font-size: 11.5px; }
+
+  /* Search/filter bar: stack vertically, fill width */
+  .admin-card-tools { width: 100%; }
+  .admin-search-input { min-width: 0; width: 100%; }
+  .admin-select { min-width: 0; flex: 1; }
+
+  /* Pagination: tighten up, hide page-info on very small screens */
+  .admin-pagination { padding: 10px 12px; gap: 3px; }
+  .page-btn { min-width: 28px; height: 28px; font-size: 11px; }
+  .pagination-info { display: none; }
+
+  /* Page header: reduce heading size */
+  .page-header h1 { font-size: 16px; }
+  .page-header p { font-size: 12px; }
 }
 
 /* Backdrop hidden on all viewports by default; shown only on mobile */
