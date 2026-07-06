@@ -74,13 +74,13 @@ export default function CardPage() {
       <div style={{ display:'flex', gap:12, flexWrap:'wrap', justifyContent:'center' }}>
         <a
           href={`/verify/${epicNo}`}
-          style={{ display:'inline-flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid var(--color-graphite)', color:'var(--color-chalk)', padding:'10px 20px', borderRadius:16, fontSize:14, fontWeight:500, textDecoration:'none' }}
+          style={{ display:'inline-flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid var(--color-graphite)', color:'var(--color-chalk)', padding:'10px 20px', minHeight:44, borderRadius:16, fontSize:14, fontWeight:500, textDecoration:'none' }}
         >
           <i className="bi bi-patch-check-fill" style={{ color:'var(--color-signal-mint)' }} /> Verify
         </a>
         <button
           onClick={() => navigate('/')}
-          style={{ display:'inline-flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid var(--color-graphite)', color:'var(--color-chalk)', padding:'10px 20px', borderRadius:16, fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}
+          style={{ display:'inline-flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid var(--color-graphite)', color:'var(--color-chalk)', padding:'10px 20px', minHeight:44, borderRadius:16, fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'inherit' }}
         >
           <i className="bi bi-house" /> Home
         </button>

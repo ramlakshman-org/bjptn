@@ -243,6 +243,7 @@ select {
   align-items: center;
   gap: 6px;
   padding: 8px 18px;
+  min-height: 44px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
