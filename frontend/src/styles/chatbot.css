@@ -32,6 +32,9 @@
     padding: var(--spacing-24) var(--spacing-16);
     gap: var(--spacing-32);
   }
+
+  /* Chat panel first on mobile — info panel scrolls below it */
+  .right-chat-panel { order: -1; }
 }
 
 /* ── Right Onboarding Console ────────────────────────────── */
