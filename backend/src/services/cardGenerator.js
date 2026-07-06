@@ -133,8 +133,20 @@ async function generateCard(voter, photoBuffer = null) {
   try {
     await page.setViewport({ width: 1600, height: 1100, deviceScaleFactor: 2 });
 
-    const templateUrl = pathToFileURL(templatePath).href;
-    await page.goto(templateUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    // Inline leader images as base64 so file:// protocol can resolve them
+    const publicDir = path.dirname(templatePath);
+    const modiPath    = path.join(publicDir, 'modi_transparent.png');
+    const nayanarPath = path.join(publicDir, 'nayanar_transparent.png');
+    let html = fs.readFileSync(templatePath, 'utf8');
+    if (fs.existsSync(modiPath)) {
+      const b64 = fs.readFileSync(modiPath).toString('base64');
+      html = html.replace(/url\('modi_transparent\.png'\)/g, `url('data:image/png;base64,${b64}')`);
+    }
+    if (fs.existsSync(nayanarPath)) {
+      const b64 = fs.readFileSync(nayanarPath).toString('base64');
+      html = html.replace(/url\('nayanar_transparent\.png'\)/g, `url('data:image/png;base64,${b64}')`);
+    }
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 15000 });
 
     const photoDataUrl = photoBuffer
       ? `data:${inferImageMimeType(photoBuffer)};base64,${photoBuffer.toString('base64')}`
