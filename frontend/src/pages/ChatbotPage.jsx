@@ -38,7 +38,6 @@ const getReferralParams = () => {
 const S = {
   WELCOME:       'WELCOME',
   AWAIT_MOBILE:  'AWAIT_MOBILE',
-  AWAIT_OTP:     'AWAIT_OTP',
   AWAIT_EPIC:    'AWAIT_EPIC',
   CONFIRM:       'CONFIRM',
   AWAIT_PHOTO:   'AWAIT_PHOTO',
@@ -86,7 +85,6 @@ const getActiveStep = (chatState) => {
   switch (chatState) {
     case 'WELCOME':
     case 'AWAIT_MOBILE':
-    case 'AWAIT_OTP':
       return 1
     case 'AWAIT_EPIC':
     case 'CONFIRM':
@@ -318,7 +316,6 @@ export default function ChatbotPage() {
   const [isFlipped, setIsFlipped]   = useState(false)
   const [cropSrc, setCropSrc]       = useState('')
   const [cropOpen, setCropOpen]     = useState(false)
-  const [otpCooldown, setOtpCooldown] = useState(0)
 
   // Persistent refs (avoid stale closures)
   const initializedRef = useRef(false)
@@ -334,7 +331,6 @@ export default function ChatbotPage() {
   const messagesEndRef  = useRef(null)
   const fileInputRef    = useRef(null)
   const cameraInputRef  = useRef(null)
-  const otpTimerRef     = useRef(null)
 
   // Keep stateRef synced
   useEffect(() => { stateRef.current = chatState }, [chatState])
@@ -390,17 +386,6 @@ export default function ChatbotPage() {
     await botSay('📱 Please enter your 10-digit mobile number to get started.', 400)
   }
 
-  const startOtpCooldown = () => {
-    setOtpCooldown(60)
-    clearInterval(otpTimerRef.current)
-    otpTimerRef.current = setInterval(() => {
-      setOtpCooldown((c) => {
-        if (c <= 1) { clearInterval(otpTimerRef.current); return 0 }
-        return c - 1
-      })
-    }, 1000)
-  }
-
   const handleMobileSubmit = async () => {
     const mobile = inputValue.trim()
     if (!/^\d{10}$/.test(mobile)) {
@@ -410,72 +395,9 @@ export default function ChatbotPage() {
     mobileRef.current = mobile
     addMsg('user', 'text', { text: maskMobile(mobile) })
     setInputValue('')
-
-    setIsTyping(true)
-    try {
-      await chat.sendOtp(mobile)
-      setIsTyping(false)
-      await botSay(`📲 OTP sent to ${maskMobile(mobile)}. Enter the 6-digit code below.`, 300)
-      startOtpCooldown()
-      setChatState(S.AWAIT_OTP)
-    } catch (err) {
-      setIsTyping(false)
-      const msg = err?.message || ''
-      await botSay(msg.includes('wait') ? `⏱ ${msg}` : '❌ Could not send OTP. Please try again.', 300)
-    }
-  }
-
-  const handleOtpSubmit = async () => {
-    const otp = inputValue.trim()
-    if (!/^\d{6}$/.test(otp)) {
-      await botSay('❌ Please enter the 6-digit OTP.', 200)
-      return
-    }
-    addMsg('user', 'text', { text: '••••••' })
-    setInputValue('')
-    setIsTyping(true)
-    try {
-      const res = await chat.verifyOtp(mobileRef.current, otp)
-      setIsTyping(false)
-      if (res?.has_card && res?.card_url) {
-        const card = {
-          card_url:      res.card_url      || '',
-          back_url:      res.back_url      || '',
-          photo_url:     res.photo_url     || '',
-          epic_no:       res.epic_no       || '',
-          voter_name:    res.voter_name    || '',
-          wtl_code:      res.wtl_code      || '',
-          referral_link: res.referral_link || '',
-        }
-        cardRef.current = card
-        epicRef.current = card.epic_no
-        saveCache(card, {})
-        await botSay('✅ Welcome back! Your Digital Member ID Card is ready.', 400)
-        addMsg('bot', 'generated_card', { card })
-        setChatState(S.DONE)
-      } else {
-        await botSay('✅ Mobile verified! Now enter your EPIC Number (Voter ID).', 400)
-        await botSay('📋 Format: 3 letters + 7 digits  e.g. ABC1234567', 200)
-        setChatState(S.AWAIT_EPIC)
-      }
-    } catch (err) {
-      setIsTyping(false)
-      await botSay(`❌ ${err?.message || 'Invalid OTP. Please try again.'}`, 200)
-    }
-  }
-
-  const handleResendOtp = async () => {
-    if (otpCooldown > 0 || isTyping) return
-    setIsTyping(true)
-    try {
-      await chat.sendOtp(mobileRef.current)
-      setIsTyping(false)
-      await botSay('📲 New OTP sent. Enter the 6-digit code below.', 200)
-      startOtpCooldown()
-    } catch (err) {
-      setIsTyping(false)
-      await botSay(`⏱ ${err?.message || 'Could not resend OTP. Please try again.'}`, 200)
-    }
+    await botSay('✅ Mobile number saved! Now enter your EPIC Number (Voter ID).', 400)
+    await botSay('📋 Format: 3 letters + 7 digits  e.g. ABC1234567', 200)
+    setChatState(S.AWAIT_EPIC)
   }
 
   const handleEpicSubmit = async () => {
@@ -759,8 +681,6 @@ export default function ChatbotPage() {
     switch (chatState) {
       case S.AWAIT_MOBILE:
         return { type: 'tel', placeholder: 'Enter 10-digit mobile number', maxLength: 10, inputMode: 'numeric' }
-      case S.AWAIT_OTP:
-        return { type: 'tel', placeholder: 'Enter 6-digit OTP', maxLength: 6, inputMode: 'numeric' }
       case S.AWAIT_EPIC:
         return { type: 'text', placeholder: 'EPIC Number (e.g. ABC1234567)', maxLength: 10 }
       case S.AWAIT_BOOTH_NO:
@@ -776,7 +696,7 @@ export default function ChatbotPage() {
       const letters = val.slice(0, 3).replace(/[^A-Z]/g, '')
       const digits  = val.slice(3).replace(/[^0-9]/g, '').slice(0, 7)
       val = letters + digits
-    } else if (chatState === S.AWAIT_MOBILE || chatState === S.AWAIT_OTP) {
+    } else if (chatState === S.AWAIT_MOBILE) {
       val = val.replace(/\D/g, '')
     }
     setInputValue(val)
@@ -787,7 +707,6 @@ export default function ChatbotPage() {
     if (!inputValue.trim() || isTyping) return
     switch (chatState) {
       case S.AWAIT_MOBILE:   await handleMobileSubmit(); break
-      case S.AWAIT_OTP:      await handleOtpSubmit(); break
       case S.AWAIT_EPIC:     await handleEpicSubmit(); break
       case S.AWAIT_BOOTH_NO: await handleBoothNoSubmit(); break
       default: break
@@ -1095,22 +1014,6 @@ export default function ChatbotPage() {
 
             {/* Input area */}
             <footer className="chat-input-area">
-              {chatState === S.AWAIT_OTP && (
-                <div style={{ textAlign: 'center', padding: '4px 16px 0', fontSize: 12 }}>
-                  {otpCooldown > 0 ? (
-                    <span style={{ color: 'var(--color-ash)' }}>Resend OTP in {otpCooldown}s</span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleResendOtp}
-                      disabled={isTyping}
-                      style={{ background: 'none', border: 'none', color: 'var(--color-signal-mint)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline', padding: '8px 12px', minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
-                    >
-                      Resend OTP
-                    </button>
-                  )}
-                </div>
-              )}
               {chatState === S.CONFIRM ? (
                 null
               ) : chatState === S.AWAIT_PHOTO ? (
